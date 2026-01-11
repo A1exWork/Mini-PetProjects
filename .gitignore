@@ -1,0 +1,13 @@
+# Python виртуальное окружение
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# QR-коды (слишком большие для Git)
+*.png
+qr_code.png
+
+# Редакторы кода
+.vscode/
+.idea/
