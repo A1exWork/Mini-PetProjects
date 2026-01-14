@@ -25,13 +25,13 @@ class QRGeneratorApp:
         self.canvas_label = tk.Label(self.root, text="QR появится тут", bg="lightgray")
         self.canvas_label.pack(expand=True, fill="both", pady=20)
     
-    def create_qr(self):
+    def create_qr(self,size=12):
         text = self.text_entry.get()
         if not text:
             messagebox.showwarning("Ошибка", "Введи текст!")
             return
         
-        qr = qrcode.QRCode(version=1, box_size=12, border=4)
+        qr = qrcode.QRCode(version=1, box_size=size, border=4)
         qr.add_data(text)
         qr.make(fit=True)
         
