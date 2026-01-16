@@ -4,12 +4,17 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 from datetime import datetime
 
+import qrcode
+import tkinter as tk
+from tkinter import messagebox
+from PIL import Image, ImageTk
+
 class QRGeneratorApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("QR Generator v2.0")
+        self.root.title("QR Generator v3.0 💾")
         self.root.geometry("450x550")
-        self.qr_image = None
+        self.qr_img = None  # ← для сохранения!
         self.setup_ui()
     
     def setup_ui(self):
@@ -21,11 +26,13 @@ class QRGeneratorApp:
         
         tk.Button(self.root, text="Создать QR", command=self.create_qr, 
                  bg="#4CAF50", fg="white", font=("Arial", 12, "bold")).pack(pady=20)
+        tk.Button(self.root, text="💾 Сохранить", 
+                 command=self.save_qr, bg="#2196F3", fg="white").pack(pady=5)
         
         self.canvas_label = tk.Label(self.root, text="QR появится тут", bg="lightgray")
         self.canvas_label.pack(expand=True, fill="both", pady=20)
     
-    def create_qr(self,size=12):
+    def create_qr(self, size=12):
         text = self.text_entry.get()
         if not text:
             messagebox.showwarning("Ошибка", "Введи текст!")
@@ -36,16 +43,23 @@ class QRGeneratorApp:
         qr.make(fit=True)
         
         img = qr.make_image(fill_color="black", back_color="white")
+        self.qr_img = img  # ← сохраняем для кнопки!
         img.thumbnail((250, 250))
         photo = ImageTk.PhotoImage(img)
         
         self.canvas_label.configure(image=photo, text="")
-        self.qr_image = photo
-        
         messagebox.showinfo("Готово", "QR создан!")
+    
+    def save_qr(self):
+        if self.qr_img:
+            text = self.text_entry.get()
+            filename = f"qr_{text[:20].replace(' ', '_')}.png"
+            self.qr_img.save(filename)
+            messagebox.showinfo("✅", f"Сохранено: {filename}")
+        else:
+            messagebox.showwarning("⚠️", "Сначала создай QR!")
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = QRGeneratorApp(root)
     root.mainloop()
-
