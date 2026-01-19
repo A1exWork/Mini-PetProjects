@@ -23,6 +23,9 @@ class QRGeneratorApp:
 
         tk.Button(self.root, text="Создать QR", command=self.create_qr,
                   bg="#4CAF50", fg="white", font=("Arial", 12, "bold")).pack(pady=20)
+        tk.Button(self.root, text="📋 Копировать", command=self.copy_text, 
+         bg="#FFC107", fg="black", font=("Arial", 11)).pack(pady=5)
+
         tk.Button(self.root, text="💾 Сохранить", command=self.save_qr,
                   bg="#2196F3", fg="white").pack(pady=5)
         tk.Button(self.root, text="🧹 Очистить", command=self.clear_all,
@@ -73,6 +76,14 @@ class QRGeneratorApp:
             messagebox.showinfo("📝 История QR", hist_text)
         else:
             messagebox.showinfo("📝 История", "Пока пусто!")
+    def copy_text(self):
+        text = self.text_entry.get()
+        if text:
+              self.root.clipboard_clear()
+              self.root.clipboard_append(text)
+              messagebox.showinfo("📋", "Текст скопирован!")
+        else:messagebox.showwarning("⚠️", "Сначала введи текст!")
+ 
 
 
 if __name__ == "__main__":
