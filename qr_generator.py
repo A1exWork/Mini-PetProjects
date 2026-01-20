@@ -23,8 +23,8 @@ class QRGeneratorApp:
 
         tk.Button(self.root, text="Создать QR", command=self.create_qr,
                   bg="#4CAF50", fg="white", font=("Arial", 12, "bold")).pack(pady=20)
-        tk.Button(self.root, text="📋 Копировать", command=self.copy_text, 
-         bg="#FFC107", fg="black", font=("Arial", 11)).pack(pady=5)
+        tk.Button(self.root, text="📋 Копировать", command=self.copy_text,
+                  bg="#FFC107", fg="black", font=("Arial", 11)).pack(pady=5)
 
         tk.Button(self.root, text="💾 Сохранить", command=self.save_qr,
                   bg="#2196F3", fg="white").pack(pady=5)
@@ -32,6 +32,14 @@ class QRGeneratorApp:
                   bg="#FF9800", fg="white").pack(pady=5)
         tk.Button(self.root, text="📝 История", command=self.show_history,
                   bg="#9C27B0", fg="white").pack(pady=5)
+        tk.Button(self.root,
+                  text="⚙ Пример",
+                  command=self.fill_example,
+                  bg="#607D8B",
+                  fg="white",
+                  font=("Arial", 10)
+                  ).pack(pady=5)
+
 
         self.canvas_label = tk.Label(
             self.root, text="QR появится тут", bg="lightgray")
@@ -76,14 +84,20 @@ class QRGeneratorApp:
             messagebox.showinfo("📝 История QR", hist_text)
         else:
             messagebox.showinfo("📝 История", "Пока пусто!")
+
     def copy_text(self):
         text = self.text_entry.get()
         if text:
-              self.root.clipboard_clear()
-              self.root.clipboard_append(text)
-              messagebox.showinfo("📋", "Текст скопирован!")
-        else:messagebox.showwarning("⚠️", "Сначала введи текст!")
- 
+            self.root.clipboard_clear()
+            self.root.clipboard_append(text)
+            messagebox.showinfo("📋", "Текст скопирован!")
+        else:
+            messagebox.showwarning("⚠️", "Сначала введи текст!")
+    def fill_example(self):
+         example = "https://github.com/A1exWork"
+         self.text_entry.delete(0, tk.END)
+         self.text_entry.insert(0, example)
+       
 
 
 if __name__ == "__main__":
