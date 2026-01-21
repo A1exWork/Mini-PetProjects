@@ -39,14 +39,18 @@ class QRGeneratorApp:
                   fg="white",
                   font=("Arial", 10)
                   ).pack(pady=5)
-
+        tk.Label(self.root, text="Размер QR:").pack()
+        self.size_var = tk.IntVar(value=10)
+        tk.Scale(self.root, from_=5, to=20, orient=tk.HORIZONTAL,
+                 variable=self.size_var, length=200).pack(pady=5)
 
         self.canvas_label = tk.Label(
             self.root, text="QR появится тут", bg="lightgray")
         self.canvas_label.pack(expand=True, fill="both", pady=20)
 
-    def create_qr(self, size=12):
+    def create_qr(self):
         text = self.text_entry.get()
+        size = self.size_var.get()
         if not text:
             messagebox.showwarning("Ошибка", "Введи текст!")
             return
@@ -93,11 +97,11 @@ class QRGeneratorApp:
             messagebox.showinfo("📋", "Текст скопирован!")
         else:
             messagebox.showwarning("⚠️", "Сначала введи текст!")
+
     def fill_example(self):
-         example = "https://github.com/A1exWork"
-         self.text_entry.delete(0, tk.END)
-         self.text_entry.insert(0, example)
-       
+        example = "https://github.com/A1exWork"
+        self.text_entry.delete(0, tk.END)
+        self.text_entry.insert(0, example)
 
 
 if __name__ == "__main__":
