@@ -1,33 +1,36 @@
 import qrcode
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, colorchooser
 from PIL import Image, ImageTk
-from datetime import datetime  # ✅ Добавлено
+from datetime import datetime
 
 class QRGeneratorApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("QR Generator v6.2 🌙✨")
-        self.root.geometry("450x650")
+        self.root.title("QR Generator v6.3 🌈✨")
+        self.root.geometry("450x700")
         self.qr_img = None
         self.history = []
         self.dark_mode = False
         self.preview_photo = None
-        self.qr_photo = None  # ✅ Добавлено
+        self.qr_photo = None
         self.setup_ui()
 
     def setup_ui(self):
-        tk.Label(self.root, text="QR Генератор v6.2 ✨",
+        tk.Label(self.root, text="QR Генератор v6.3 🌈✨",
                  font=("Arial", 18, "bold")).pack(pady=20)
 
         tk.Label(self.root, text="Текст/URL:").pack()
         self.text_entry = tk.Entry(self.root, width=40, font=("Arial", 11))
         self.text_entry.pack(pady=10)
-        self.text_entry.bind("<KeyRelease>", self.on_text_change)  # ✅ Live preview
+        self.text_entry.bind("<KeyRelease>", self.on_text_change)
 
         tk.Button(self.root, text="🎨 Создать QR", command=self.create_qr,
                   bg="#4CAF50", fg="white", font=("Arial", 12, "bold")).pack(pady=20)
 
+        tk.Button(self.root, text="🌈 Цвета QR", command=self.choose_colors,
+                  bg="#FF5722", fg="white", font=("Arial", 11)).pack(pady=5)
+        
         tk.Button(self.root, text="📋 Копировать", command=self.copy_text,
                   bg="#FFC107", fg="black", font=("Arial", 11)).pack(pady=5)
         tk.Button(self.root, text="💾 Сохранить", command=self.save_qr,
@@ -48,7 +51,7 @@ class QRGeneratorApp:
 
         self.theme_check = tk.Checkbutton(self.root, text="🌙 Тёмная тема",
                                           command=self.toggle_theme, font=("Arial", 10))
-        self.theme_check.pack(pady=10)  # ✅ Исправлено py → pady
+        self.theme_check.pack(pady=10)
 
         self.canvas_label = tk.Label(self.root, text="QR появится тут",
                                      bg="lightgray", wraplength=300)
@@ -78,7 +81,7 @@ class QRGeneratorApp:
 
             self.canvas_label.configure(image=self.preview_photo, text="")
         except:
-            pass  # Игнорируем ошибки превью
+            pass
 
     def create_qr(self):
         text = self.text_entry.get()
@@ -94,13 +97,39 @@ class QRGeneratorApp:
         img = qr.make_image(fill_color="black", back_color="white")
         self.qr_img = img
         img.thumbnail((250, 250))
-        self.qr_photo = ImageTk.PhotoImage(img)  # ✅ Сохраняем ссылку
+        self.qr_photo = ImageTk.PhotoImage(img)
 
         self.canvas_label.configure(image=self.qr_photo, text="")
-        self.canvas_label.image = self.qr_photo  # ✅ Дополнительно держим ссылку
+        self.canvas_label.image = self.qr_photo
         self.history.append(
             f"QR: {text[:30]}... ({size}px) - {datetime.now().strftime('%H:%M')}")
         messagebox.showinfo("Готово", f"QR создан! Размер: {size}px")
+
+    def choose_colors(self):
+        if not self.text_entry.get().strip():
+            messagebox.showwarning("⚠️", "Сначала введи текст!")
+            return
+        
+        fill_color = colorchooser.askcolor(title="Цвет QR (fill)")[1] or "black"
+        back_color = colorchooser.askcolor(title="Фон QR (back)")[1] or "white"
+        
+        size = self.size_var.get()
+        text = self.text_entry.get()
+        
+        qr = qrcode.QRCode(version=1, box_size=size, border=4)
+        qr.add_data(text)
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill_color=fill_color, back_color=back_color)
+        self.qr_img = img
+        img.thumbnail((250, 250))
+        self.qr_photo = ImageTk.PhotoImage(img)
+        
+        self.canvas_label.configure(image=self.qr_photo, text="")
+        self.canvas_label.image = self.qr_photo
+        
+        self.history.append(f"QR: {text[:30]}... ({size}px, цвета) - {datetime.now().strftime('%H:%M')}")
+        messagebox.showinfo("🎨", f"QR с цветами: {fill_color} на {back_color}")
 
     def save_qr(self):
         if self.qr_img:
@@ -112,7 +141,6 @@ class QRGeneratorApp:
                 .replace(":", "_")
             )
 
-            # ✅ НОВАЯ ФИЧА: таймстемп в имя файла
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"qr_{safe_text}_{timestamp}.png"
             self.qr_img.save(filename)
@@ -125,7 +153,7 @@ class QRGeneratorApp:
         self.canvas_label.configure(image="", text="QR появится тут")
         self.qr_img = None
         self.preview_photo = None
-        self.qr_photo = None  # ✅ Очищаем
+        self.qr_photo = None
 
     def show_history(self):
         if self.history:
