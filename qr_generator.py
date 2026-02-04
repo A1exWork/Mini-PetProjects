@@ -3,12 +3,14 @@ import tkinter as tk
 from tkinter import messagebox, colorchooser
 from PIL import Image, ImageTk
 from datetime import datetime
+import base64
+from io import BytesIO  # ✅ Для новой фичи
 
 class QRGeneratorApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("QR Generator v6.3 🌈✨")
-        self.root.geometry("450x700")
+        self.root.title("QR Generator v6.4 📱✨")
+        self.root.geometry("450x720")
         self.qr_img = None
         self.history = []
         self.dark_mode = False
@@ -17,7 +19,7 @@ class QRGeneratorApp:
         self.setup_ui()
 
     def setup_ui(self):
-        tk.Label(self.root, text="QR Генератор v6.3 🌈✨",
+        tk.Label(self.root, text="QR Генератор v6.4 📱✨",
                  font=("Arial", 18, "bold")).pack(pady=20)
 
         tk.Label(self.root, text="Текст/URL:").pack()
@@ -33,6 +35,8 @@ class QRGeneratorApp:
         
         tk.Button(self.root, text="📋 Копировать", command=self.copy_text,
                   bg="#FFC107", fg="black", font=("Arial", 11)).pack(pady=5)
+        tk.Button(self.root, text="📱 Поделиться", command=self.share_qr,  # ✅ НОВАЯ КНОПКА
+                  bg="#00BCD4", fg="white", font=("Arial", 11)).pack(pady=5)
         tk.Button(self.root, text="💾 Сохранить", command=self.save_qr,
                   bg="#2196F3", fg="white").pack(pady=5)
         tk.Button(self.root, text="🧹 Очистить", command=self.clear_all,
@@ -130,6 +134,20 @@ class QRGeneratorApp:
         
         self.history.append(f"QR: {text[:30]}... ({size}px, цвета) - {datetime.now().strftime('%H:%M')}")
         messagebox.showinfo("🎨", f"QR с цветами: {fill_color} на {back_color}")
+
+    def share_qr(self):  # ✅ НОВЫЙ МЕТОД
+        if self.qr_img:
+            buffer = BytesIO()
+            self.qr_img.save(buffer, format='PNG')
+            img_str = base64.b64encode(buffer.getvalue()).decode()
+            
+            share_text = f"📱 QR код:\ndata:image/png;base64,{img_str}"
+            
+            self.root.clipboard_clear()
+            self.root.clipboard_append(share_text)
+            messagebox.showinfo("📱", "QR скопирован как картинка! Вставь в чат (Ctrl+V)")
+        else:
+            messagebox.showwarning("⚠️", "Сначала создай QR!")
 
     def save_qr(self):
         if self.qr_img:
