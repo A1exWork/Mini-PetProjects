@@ -4,13 +4,13 @@ from tkinter import messagebox, colorchooser
 from PIL import Image, ImageTk
 from datetime import datetime
 import base64
-from io import BytesIO  # ✅ Для новой фичи
+from io import BytesIO
 
 class QRGeneratorApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("QR Generator v6.4 📱✨")
-        self.root.geometry("450x720")
+        self.root.title("QR Generator v6.5 📏✨")
+        self.root.geometry("450x740")
         self.qr_img = None
         self.history = []
         self.dark_mode = False
@@ -19,13 +19,18 @@ class QRGeneratorApp:
         self.setup_ui()
 
     def setup_ui(self):
-        tk.Label(self.root, text="QR Генератор v6.4 📱✨",
+        tk.Label(self.root, text="QR Генератор v6.5 📏✨",
                  font=("Arial", 18, "bold")).pack(pady=20)
 
         tk.Label(self.root, text="Текст/URL:").pack()
         self.text_entry = tk.Entry(self.root, width=40, font=("Arial", 11))
         self.text_entry.pack(pady=10)
         self.text_entry.bind("<KeyRelease>", self.on_text_change)
+
+        # ✅ Новый инфо-лейбл
+        self.info_label = tk.Label(self.root, text="0 символов | QR: пусто",
+                                   font=("Arial", 9))
+        self.info_label.pack(pady=(0, 5))
 
         tk.Button(self.root, text="🎨 Создать QR", command=self.create_qr,
                   bg="#4CAF50", fg="white", font=("Arial", 12, "bold")).pack(pady=20)
@@ -35,7 +40,7 @@ class QRGeneratorApp:
         
         tk.Button(self.root, text="📋 Копировать", command=self.copy_text,
                   bg="#FFC107", fg="black", font=("Arial", 11)).pack(pady=5)
-        tk.Button(self.root, text="📱 Поделиться", command=self.share_qr,  # ✅ НОВАЯ КНОПКА
+        tk.Button(self.root, text="📱 Поделиться", command=self.share_qr,
                   bg="#00BCD4", fg="white", font=("Arial", 11)).pack(pady=5)
         tk.Button(self.root, text="💾 Сохранить", command=self.save_qr,
                   bg="#2196F3", fg="white").pack(pady=5)
@@ -63,7 +68,20 @@ class QRGeneratorApp:
 
     def on_text_change(self, event=None):
         text = self.text_entry.get()
-        if len(text) > 2:
+        length = len(text)
+
+        if length == 0:
+            status = "пусто"
+        elif length <= 50:
+            status = "малый"
+        elif length <= 150:
+            status = "средний"
+        else:
+            status = "крупный"
+
+        self.info_label.config(text=f"{length} символов | QR: {status}")
+
+        if length > 2:
             self.create_qr_preview()
 
     def on_size_change(self, event=None):
@@ -132,10 +150,11 @@ class QRGeneratorApp:
         self.canvas_label.configure(image=self.qr_photo, text="")
         self.canvas_label.image = self.qr_photo
         
-        self.history.append(f"QR: {text[:30]}... ({size}px, цвета) - {datetime.now().strftime('%H:%M')}")
+        self.history.append(
+            f"QR: {text[:30]}... ({size}px, цвета) - {datetime.now().strftime('%H:%M')}")
         messagebox.showinfo("🎨", f"QR с цветами: {fill_color} на {back_color}")
 
-    def share_qr(self):  # ✅ НОВЫЙ МЕТОД
+    def share_qr(self):
         if self.qr_img:
             buffer = BytesIO()
             self.qr_img.save(buffer, format='PNG')
@@ -172,6 +191,7 @@ class QRGeneratorApp:
         self.qr_img = None
         self.preview_photo = None
         self.qr_photo = None
+        self.info_label.config(text="0 символов | QR: пусто")
 
     def show_history(self):
         if self.history:
@@ -193,6 +213,7 @@ class QRGeneratorApp:
         example = "https://github.com/A1exWork"
         self.text_entry.delete(0, tk.END)
         self.text_entry.insert(0, example)
+        self.on_text_change()
 
     def toggle_theme(self):
         self.dark_mode = not self.dark_mode
